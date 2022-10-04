@@ -13,7 +13,7 @@ error_reporting(E_ALL);
 require_once("{$_SERVER['DOCUMENT_ROOT']}/include/router.php");
 
 // Return access denied error page when user open the API link
-get('/', 'errors/403.php');
+any('/', 'errors/403.php');
 
 // Testing playground here folks:
 get("/test", "test.php");
@@ -31,13 +31,17 @@ any("/v1.0/auth/login", function () {
         // If method is POST then continue the logic
         if (empty($_POST['username']) || empty($_POST['password'])) {
             // If missing one or more fields then return an error
+            if (empty($_POST['username']) && !empty($_POST['password'])) {
+                $missing = array("username" => "Vui lòng điền vào trường này!");
+            } else if (!empty($_POST['username']) && empty($_POST['password'])) {
+                $missing = array("password" => "Vui lòng điền vào trường này!");
+            } else {
+                $missing = array("password" => "Vui lòng điền vào trường này!", "username" => "Vui lòng điền vào trường này!");
+            }
             die(json_encode(array(
                 "status" => "failed",
                 "status_code" => "user_auth_failed_missing_field",
-                "detail" => array(
-                    "username" => "Vui lòng điền vào trường này!",
-                    "password" => "Vui lòng điền vào trường này!"
-                )
+                "detail" => $missing
             )));
         }
         if (isset($_POST['username']) && isset($_POST['password'])) {
