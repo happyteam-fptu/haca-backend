@@ -40,10 +40,10 @@ function getBearerToken()
 
 function auth_verify($jwt)
 {
-    require_once("{$_SERVER['DOCUMENT_ROOT']}/include/jwtkey.php");
     try {
+        require_once("{$_SERVER['DOCUMENT_ROOT']}/include/jwtkey.php");
         if (empty($jwt)) throw new Exception("Token cannot be empty!");
-        $decoded_payload = JWT::decode($jwt, $JWT_KEY, array("HS256"));
+        $decoded_payload = JWT::decode($jwt, getenv("JWT_KEY"), array("HS256"));
         return $decoded_payload;
     } catch (Exception $e) {
         if ($e->getMessage() == "Token cannot be empty!") die(json_encode(array(
@@ -67,4 +67,12 @@ function getUIDFromToken($jwt)
     $payload = base64_decode($tokenParts[1]);
     $uid = json_decode($payload)->stid;
     return $uid;
+}
+
+function getTokenType($jwt)
+{
+    $tokenParts = explode('.', $jwt);
+    $payload = base64_decode($tokenParts[1]);
+    $type = json_decode($payload)->token_type;
+    return $type;
 }
