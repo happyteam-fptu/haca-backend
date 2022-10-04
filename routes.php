@@ -5,11 +5,19 @@
  * Copyright (c) 2022 Happy Team - SSG104 FPT University
  */
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Require router file for URL routing logic to works 
 require_once("{$_SERVER['DOCUMENT_ROOT']}/include/router.php");
 
 // Return access denied error page when user open the API link
 get('/', 'errors/403.php');
+
+// Testing playground here folks:
+get("/test", "test.php");
+get("/key", "include/jwtkey.php");
 
 // Handling login backend logic
 any('/v1.0/auth/login', function () {
@@ -29,20 +37,44 @@ any('/v1.0/auth/login', function () {
             $stmt->execute();
             $stmt->store_result();
             if ($stmt->num_rows == 1) {
-                $stmt = $conn->prepare("SELECT name, last_name, username, member_code FROM se1741_students WHERE username=? AND password=? LIMIT 1");
+                $stmt = $conn->prepare("SELECT username, student_id, role FROM se1741_students WHERE username=? AND password=? LIMIT 1");
                 $stmt->bind_param("ss", $_POST['username'], $_POST['password']);
                 $stmt->execute();
-                $stmt->bind_result($name, $last_name, $username, $member_code);
+                $stmt->bind_result($username, $student_id, $role);
                 $stmt->store_result();
                 // To check if the row exists
                 if ($stmt->num_rows == 1) {
                     // Fetching the contents of the row
                     if ($stmt->fetch()) {
+                        // TODO: Add JWT Authentication Access Token Generator for API
+                        // Include JWT class library for easier coding
+                        require_once("./utils/jwt.php");
+                        // Include JWT Key variable from .env file
+                        // Try to keep it as private as possible...
+                        $JWT_KEY = getenv("JWT_KEY");
+                        // Usually expires in 4 hours
+                        $JWT_ACCESS_EXPIRE = getenv("JWT_ACCESS_TOKEN_EXPIRE_TIME");
+                        // Usually expires in 1 month
+                        $JWT_REFRESH_EXPIRE = getenv("JWT_REFRESH_TOKEN_EXPIRE_TIME");
+                        // Handling generating access token logic here
+                        $payload = array();
+                        $payload['token_type'] = "access";
+                        $payload['iat'] = strtotime(date("Y-m-d H:i:s"));
+                        $payload['exp'] = strtotime(date("Y-m-d H:i:s")) + $JWT_ACCESS_EXPIRE;
+                        $payload['uname'] = $username;
+                        $payload['stid'] = $student_id;
+                        $payload['role'] = $role;
+                        $token = JWT::encode($payload, $JWT_KEY);
+                        $rpayload = $payload;
+                        $rpayload['token_type'] = "refresh";
+                        $rpayload['iat'] = strtotime(date("Y-m-d H:i:s"));
+                        $rpayload['exp'] = strtotime(date("Y-m-d H:i:s")) + $JWT_REFRESH_EXPIRE;
+                        $rtoken = JWT::encode($rpayload, $JWT_KEY);
                         echo json_encode(array(
                             "status" => "success",
                             "status_code" => "user_auth_success",
                             "message" => "Đăng nhập thành công!",
-                            "auth_data" => array("access_token" => "123", "refresh_token" => "abc")
+                            "auth_data" => array("access_token" => $token, "refresh_token" => $rtoken)
                         ));
                     }
                 } else {

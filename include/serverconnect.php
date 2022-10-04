@@ -27,6 +27,9 @@ $tendb = getenv('DATABASE_NAME');
 // DATABASE_USER=root
 // DATABASE_PASSWORD=
 // DATABASE_NAME=sample_db
+// JWT_KEY=XXX
+// JWT_ACCESS_TOKEN_EXPIRE_TIME=14400
+// JWT_REFRESH_TOKEN_EXPIRE_TIME=2630000
 ////////////////////////////////////////////
 try {
     $db = mysqli_connect($maychu, $tendangnhap, $matkhau, $tendb);
