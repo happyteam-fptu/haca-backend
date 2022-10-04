@@ -17,10 +17,9 @@ get('/', 'errors/403.php');
 
 // Testing playground here folks:
 get("/test", "test.php");
-get("/key", "include/jwtkey.php");
 
 // Handling login backend logic
-any('/v1.0/auth/login', function () {
+any("/v1.0/auth/login", function () {
     // Require database server connection credential establishment file for database queries to works
     require_once("{$_SERVER['DOCUMENT_ROOT']}/include/serverconnect.php");
     // Set response type header to JSON for better compatibility
@@ -46,8 +45,8 @@ any('/v1.0/auth/login', function () {
                 if ($stmt->num_rows == 1) {
                     // Fetching the contents of the row
                     if ($stmt->fetch()) {
-                        // TODO: Add JWT Authentication Access Token Generator for API
-                        // Include JWT class library for easier coding
+                        // JWT Authentication Access Token Generator for API
+                        // Include JWT class library for easier generation
                         require_once("./utils/jwt.php");
                         // Include JWT Key variable from .env file
                         // Try to keep it as private as possible...
@@ -93,7 +92,7 @@ any('/v1.0/auth/login', function () {
             }
         } else
             // If missing or wrong parameters then return an error
-            echo json_encode(array("error" => "wrong_or_missing_params", "detail" => "Tham số bạn truyền vào cho API đang thiếu hoặc bị sai!"));
+            echo json_encode(array("error" => "wrong_or_missing_fields", "detail" => "Thông tin bạn điền đang thiếu hoặc bị sai!"));
     } else
         // If other method then API is not supported, return error
         echo json_encode(array("error" => "unknown_method", "detail" => "API không hỗ trợ method bạn đang sử dụng!"));
