@@ -22,13 +22,24 @@ get("/test", "test.php");
 any("/v1.0/auth/login", function () {
     // Require database server connection credential establishment file for database queries to works
     require_once("{$_SERVER['DOCUMENT_ROOT']}/include/serverconnect.php");
-    // Set response type header to JSON for better compatibility
+    // Set response type header to JSON for better browser compatibility
     header('Content-Type: application/json; charset=utf-8');
     // If method is GET then API is not supported, return message
     if ($_SERVER['REQUEST_METHOD'] == "GET")
         echo json_encode(array("error" => "method_not_supported", "detail" => "API không hỗ trợ method GET!"));
     else if ($_SERVER['REQUEST_METHOD'] == "POST") {
         // If method is POST then continue the logic
+        if (empty($_POST['username']) || empty($_POST['password'])) {
+            // If missing one or more fields then return an error
+            die(json_encode(array(
+                "status" => "failed",
+                "status_code" => "user_auth_failed_missing_field",
+                "detail" => array(
+                    "username" => "Vui lòng điền vào trường này!",
+                    "password" => "Vui lòng điền vào trường này!"
+                )
+            )));
+        }
         if (isset($_POST['username']) && isset($_POST['password'])) {
             // Handling authentication logic with database using prepared statements
             $stmt = $conn->prepare("SELECT username FROM se1741_students WHERE username=? LIMIT 1");
@@ -72,7 +83,7 @@ any("/v1.0/auth/login", function () {
                         echo json_encode(array(
                             "status" => "success",
                             "status_code" => "user_auth_success",
-                            "message" => "Đăng nhập thành công!",
+                            "detail" => "Đăng nhập thành công!",
                             "auth_data" => array("access_token" => $token, "refresh_token" => $rtoken)
                         ));
                     }
@@ -80,19 +91,22 @@ any("/v1.0/auth/login", function () {
                     echo json_encode(array(
                         "status" => "failed",
                         "status_code" => "user_auth_failed_wrong_pass",
-                        "message" => "Mật khẩu sai! Vui lòng thử lại..."
+                        "detail" => "Mật khẩu sai! Vui lòng thử lại..."
                     ));
                 }
             } else {
                 echo json_encode(array(
                     "status" => "failed",
-                    "status_code" => "user_auth_failed_wrong_username",
-                    "message" => "Tên đăng nhập sai! Vui lòng thử lại..."
+                    "status_code" => "user_auth_failed_unknown_user",
+                    "detail" => "Không tìm thấy người dùng mà bạn vừa nhập! Vui lòng thử lại..."
                 ));
             }
         } else
             // If missing or wrong parameters then return an error
-            echo json_encode(array("error" => "wrong_or_missing_fields", "detail" => "Thông tin bạn điền đang thiếu hoặc bị sai!"));
+            echo json_encode(array(
+                "error" => "wrong_or_missing_params",
+                "detail" => "Tham số bạn truyền vào API đang thiếu hoặc bị sai!"
+            ));
     } else
         // If other method then API is not supported, return error
         echo json_encode(array("error" => "unknown_method", "detail" => "API không hỗ trợ method bạn đang sử dụng!"));
