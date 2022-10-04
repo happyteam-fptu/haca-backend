@@ -6,7 +6,7 @@
  */
 
 // Include custom dotenv class for confidential and secure
-require("{$_SERVER['DOCUMENT_ROOT']}/utils/dotenv.php");
+require_once("{$_SERVER['DOCUMENT_ROOT']}/utils/dotenv.php");
 
 (new DotEnv($_SERVER['DOCUMENT_ROOT'] . '/.env'))->load();
 

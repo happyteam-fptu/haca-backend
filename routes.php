@@ -129,6 +129,25 @@ any("/v1.0/auth/login", function () {
         echo json_encode(array("error" => "unknown_method", "detail" => "API không hỗ trợ method bạn đang sử dụng!"));
 });
 
+// Handle generating new access token based on current valid refresh token...
+any("/v1.0/auth/refresh", function () {
+    // Set response type header to JSON for better browser compatibility
+    header('Content-Type: application/json; charset=utf-8');
+    if ($_SERVER['REQUEST_METHOD'] == "GET")
+        echo json_encode(array("error" => "method_not_supported", "detail" => "API không hỗ trợ method GET!"));
+    else if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        // If method is POST then continue the logic
+        // TODO: Check if token is expired then generate new access token
+        if (!auth_verify(getBearerToken())) {
+        } else {
+            // Print out screen that access token is still valid, no need for refreshing...
+            echo json_encode(array("error" => "token_is_still_valid", "detail" => "Mã token vẫn còn truy cập được. Vui lòng thử lại sau khi token đã hết hạn!"));
+        }
+    } else
+        // If other method then API is not supported, return error
+        echo json_encode(array("error" => "unknown_method", "detail" => "API không hỗ trợ method bạn đang sử dụng!"));
+});
+
 // Handling getting current user's information
 get('/v1.0/auth/user', function () {
     // Set response type header to JSON for better browser compatibility

@@ -10,7 +10,7 @@
 // Trang web sẽ bị lỗi 500 Internal Error nếu như không tìm thấy file hoặc file bị lỗi trong hàm require()
 
 // Include custom dotenv class for confidential and secure
-require("{$_SERVER['DOCUMENT_ROOT']}/utils/dotenv.php");
+require_once("{$_SERVER['DOCUMENT_ROOT']}/utils/dotenv.php");
 
 (new DotEnv($_SERVER['DOCUMENT_ROOT'] . '/.env'))->load();
 ////////////////////////////////////////////

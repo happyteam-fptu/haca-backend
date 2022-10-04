@@ -59,3 +59,12 @@ function auth_verify($jwt)
         return false;
     }
 }
+
+// Get User ID from access token
+function getUIDFromToken($jwt)
+{
+    $tokenParts = explode('.', $jwt);
+    $payload = base64_decode($tokenParts[1]);
+    $uid = json_decode($payload)->stid;
+    return $uid;
+}
