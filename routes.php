@@ -11,6 +11,7 @@ error_reporting(E_ALL);
 
 // Require router file for URL routing logic to works 
 require_once("{$_SERVER['DOCUMENT_ROOT']}/include/router.php");
+require_once("{$_SERVER['DOCUMENT_ROOT']}/include/authverify.php");
 
 // Return access denied error page when user open the API link
 any('/', 'errors/403.php');
@@ -118,6 +119,9 @@ any("/v1.0/auth/login", function () {
 
 // Handling getting student's information
 get('/v1.0/student/info', function () {
+    // Set response type header to JSON for better browser compatibility
+    header('Content-Type: application/json; charset=utf-8');
+    auth_verify(getBearerToken());
 });
 
 // ##################################################
