@@ -1,3 +1,14 @@
 RewriteEngine On
 RewriteCond %{REQUEST_URI}  !(\.png|\.jpg|\.webp|\.gif|\.jpeg|\.zip|\.css|\.svg|\.js)$
 RewriteRule (.*) routes.php [QSA,L]
+
+php_flag display_startup_errors on
+php_flag display_errors on
+php_flag html_errors on
+php_flag log_errors on
+php_flag ignore_repeated_errors on
+php_flag ignore_repeated_source on
+php_flag report_memleaks on
+php_flag track_errors on
+php_value error_log /home/path/public_html/domain/PHP_errors.log
+php_value error_reporting 1
