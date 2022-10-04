@@ -129,14 +129,39 @@ any("/v1.0/auth/login", function () {
         echo json_encode(array("error" => "unknown_method", "detail" => "API không hỗ trợ method bạn đang sử dụng!"));
 });
 
-// Handling getting student's information
-get('/v1.0/student/info', function () {
+// Handling getting current user's information
+get('/v1.0/auth/user', function () {
     // Set response type header to JSON for better browser compatibility
     header('Content-Type: application/json; charset=utf-8');
     if (auth_verify(getBearerToken())) {
         // If having and accepted bearer token within the request authentication header then
         // continue executing the below code...
-        echo "Tunga nh dziaiii";
+        // TODO: Query from database and return JSON data of current user...
+        // Require database server connection credential establishment file for database queries to works
+        require_once("{$_SERVER['DOCUMENT_ROOT']}/include/serverconnect.php");
+        // Get student's ID from access token payload
+        $uid = getUIDFromToken(getBearerToken());
+        $sql = "SELECT student_id, member_code, name, first_name, middle_name, last_name, email, username, day_of_birth, month_of_birth, year_of_birth, role, avatar, gender FROM se1741_students WHERE student_id = '$uid'";
+        $res = $conn->query($sql);
+        if ($res->num_rows == 1) {
+            $row = $res->fetch_assoc();
+            echo json_encode(array(
+                "student_id" => $row['student_id'],
+                "member_code" => $row['member_code'],
+                "name" => $row['name'],
+                "first_name" => $row['first_name'],
+                "middle_name" => $row['middle_name'],
+                "last_name" => $row['last_name'],
+                "email" => $row['email'],
+                "username" => $row['username'],
+                "day_of_birth" => $row['day_of_birth'],
+                "month_of_birth" => $row['month_of_birth'],
+                "year_of_birth" => $row['year_of_birth'],
+                "role" => $row['role'],
+                "avatar" => $row['avatar'],
+                "gender" => $row['gender']
+            ));
+        }
     }
 });
 
