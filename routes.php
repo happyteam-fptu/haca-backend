@@ -134,7 +134,8 @@ get('/v1.0/student/info', function () {
     // Set response type header to JSON for better browser compatibility
     header('Content-Type: application/json; charset=utf-8');
     if (auth_verify(getBearerToken())) {
-        // If having and accepted bearer token within the request header then continue the below code...
+        // If having and accepted bearer token within the request authentication header then
+        // continue executing the below code...
         echo "Tunga nh dziaiii";
     }
 });

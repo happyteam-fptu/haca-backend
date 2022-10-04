@@ -46,10 +46,15 @@ function auth_verify($jwt)
         $decoded_payload = JWT::decode($jwt, $JWT_KEY, array("HS256"));
         return $decoded_payload;
     } catch (Exception $e) {
+        if ($e->getMessage() == "Token cannot be empty!") die(json_encode(array(
+            "error" => "auth_token_not_provided",
+            "detail" => "Mã token xác thực chưa cung cấp!",
+            // "debug_info" => array("err_msg" => $e->getMessage(), "token" => $jwt, "key" => $JWT_KEY)
+        )));
         die(json_encode(array(
             "error" => "expired_token_or_algorithm_not_supported",
             "detail" => "Mã token đã hết hạn hoặc có thể thuật toán mã hóa của token chưa được hỗ trợ.",
-            // "debug_info" => array("err_msg" => $e, "token" => $jwt, "key" => $JWT_KEY)
+            // "debug_info" => array("err_msg" => $e->getMessage(), "token" => $jwt, "key" => $JWT_KEY)
         )));
         return false;
     }
