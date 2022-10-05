@@ -5,6 +5,7 @@
  * Copyright (c) 2022 Happy Team - SSG104 FPT University
  */
 
+// Setting PHP to display debug errors
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

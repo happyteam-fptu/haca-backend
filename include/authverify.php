@@ -1,9 +1,7 @@
 <?php
 require_once("{$_SERVER['DOCUMENT_ROOT']}/utils/jwt.php");
 
-/** 
- * Get header Authorization
- * */
+// Get Authorization header
 function getAuthorizationHeader()
 {
     $headers = null;
@@ -23,9 +21,7 @@ function getAuthorizationHeader()
     return $headers;
 }
 
-/**
- * get access token from header
- * */
+// Get access token from header
 function getBearerToken()
 {
     $headers = getAuthorizationHeader();
@@ -38,6 +34,7 @@ function getBearerToken()
     return null;
 }
 
+// Verify JWT token
 function auth_verify($jwt)
 {
     try {
@@ -69,6 +66,7 @@ function getUIDFromToken($jwt)
     return $uid;
 }
 
+// Get token type from JWT token
 function getTokenType($jwt)
 {
     $tokenParts = explode('.', $jwt);
