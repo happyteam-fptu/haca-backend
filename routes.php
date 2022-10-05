@@ -12,7 +12,6 @@ error_reporting(E_ALL);
 
 // CORS Header allow request from any IP
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST');
 header("Access-Control-Allow-Headers: *");
 
 // Require router file for URL routing logic to works 
