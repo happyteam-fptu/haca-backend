@@ -24,8 +24,6 @@ require_once("{$_SERVER['DOCUMENT_ROOT']}/include/authverify.php");
 
 // Return access denied error page when user open the API link
 any('/', 'errors/403.php');
-// Testing playground here folks:
-get("/test", "test.php");
 // Handling login backend logic
 any("/v1.0/auth/login", "controllers/login.php");
 // Handle generating new access token based on current valid refresh token...
