@@ -21,7 +21,7 @@ else if ($_SERVER['REQUEST_METHOD'] == "POST") {
         } else if (!empty($_POST['username']) && empty($_POST['password'])) {
             $missing = array("password" => "Vui lòng điền vào trường này!");
         } else {
-            $missing = array("password" => "Vui lòng điền vào trường này!", "username" => "Vui lòng điền vào trường này!");
+            $missing = array("username" => "Vui lòng điền vào trường này!", "password" => "Vui lòng điền vào trường này!");
         }
         die(json_encode(array(
             "status" => "failed",
