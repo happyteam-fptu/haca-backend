@@ -40,6 +40,16 @@ else if ($_SERVER['REQUEST_METHOD'] == "POST") {
         } else if ($_POST['mode'] == "change_without_verify") {
             // Handling change password without verify code logic here
             // Usually when user is logged-in and want to change password
+            if (empty($_POST['old_password']) || empty($_POST['new_password'])) {
+                // If missing old_password or new_password then return an error
+                die(json_encode(array(
+                    "status" => "failed",
+                    "status_code" => "missing_parameter",
+                    "detail" => "Thiếu trường 'old_password' hoặc 'new_password'!"
+                )));
+            } else {
+                // If old_password and new_password are not empty then continue the logic
+            }
         } else if ($_POST['mode'] == "find") {
             // Handling find username to get email address or find user associated with
             // the inputted email then send email logic here
@@ -55,7 +65,7 @@ else if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 if (filter_var($_POST['search_query'], FILTER_VALIDATE_EMAIL)) {
                     // If the input is a valid email address
                     $email = $_POST['search_query'];
-                    $sql = "SELECT name, username, email FROM se1741_students WHERE email = '$email' LIMIT 1";
+                    $sql = "SELECT email FROM se1741_students WHERE email = '$email' LIMIT 1";
                     $res = $conn->query($sql);
                     if ($res->num_rows == 1) {
                         $row = $res->fetch_assoc();
@@ -63,7 +73,7 @@ else if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         die(json_encode(array(
                             "status" => "success",
                             "status_code" => "user_found_with_email_sent",
-                            "detail" => "Đã gửi email xác nhận đổi mật khẩu đến '{$row['email']}'!"
+                            "detail" => "Đã gửi email xác nhận đổi mật khẩu đến '" . strtolower($row['email']) . "'!"
                         )));
                     } else {
                         die(json_encode(array(
@@ -75,21 +85,25 @@ else if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 } else {
                     // If the input is a invalid email address then it should be username or student ID
                     $input = $_POST['search_query'];
-                    $sql = "SELECT name, username, email FROM se1741_students WHERE username = '$input' OR student_id = '$input' LIMIT 1";
+                    $sql = "SELECT name, username, email, avatar FROM se1741_students WHERE username = '$input' OR student_id = '$input' LIMIT 1";
                     $res = $conn->query($sql);
                     if ($res->num_rows == 1) {
                         $row = $res->fetch_assoc();
                         // User found, showing confirm screen
-                        die(json_encode(array(
-                            "status" => "success",
-                            "status_code" => "user_found_awaiting_confirmation",
-                            "detail" => "Đã tìm thấy người dùng! Vui lòng xác nhận trước khi gửi mail...",
-                            "user_data" => array(
-                                "name" => $row['name'],
-                                "username" => $row['username'],
-                                "email" => strtolower(hideEmailAddress($row['email']))
-                            )
-                        )));
+                        if (isset($_POST['confirm']) && $_POST['confirm'] == "1") {
+                            // Send mail to user's inbox
+                        } else
+                            die(json_encode(array(
+                                "status" => "success",
+                                "status_code" => "user_found_awaiting_confirmation",
+                                "detail" => "Đã tìm thấy người dùng! Vui lòng xác nhận trước khi gửi mail...",
+                                "user_data" => array(
+                                    "name" => $row['name'],
+                                    "username" => $row['username'],
+                                    "email" => strtolower(hideEmailAddress($row['email'])),
+                                    "avatar" => $row['avatar'],
+                                )
+                            )));
                     } else {
                         die(json_encode(array(
                             "status" => "failed",
